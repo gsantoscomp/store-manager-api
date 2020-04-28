@@ -27,7 +27,8 @@ module.exports = {
 
     async show(req, res) {
         try {
-            const user = await User.findByPk(req.params.id);
+            const { id } = req.params;
+            const user = await User.findByPk(id);
 
             return res.json(user);
         } catch(error) {
@@ -37,13 +38,16 @@ module.exports = {
 
     async update(req, res) {
         try {
+            const { id } = req.params;
             const { username, name } = req.body;
-            const user = await User.update({ username, name },{
+            await User.update({ username, name },{
                 where: {
-                    id: req.params.id
+                    id: id
                 }
             });
 
+            const user = User.findByPk(id);
+            
             return res.json(user);
         } catch(error) {
             return res.json(error);
@@ -52,9 +56,11 @@ module.exports = {
 
     async destroy(req, res) {
         try {
+            const { id } = req.params;
+
             await User.destroy({
                 where: {
-                    id: req.params.id
+                    id: id
                 }
             })
     
