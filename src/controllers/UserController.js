@@ -1,9 +1,15 @@
 const User = require('../models/User');
+const Purchase = require('../models/Purchase');
 
 module.exports = {
     async index(req, res) {
         try {
-            const users =  await User.findAll();
+            const users =  await User.findAll({
+                include: [{
+                    model: Purchase,
+                    as: 'purchases'
+                }]
+            });
 
             return res.json(users);
         } catch(error) {

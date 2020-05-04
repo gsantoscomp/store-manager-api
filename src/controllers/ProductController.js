@@ -13,8 +13,13 @@ module.exports = {
 
     async store(req, res) {
         try {
-            const { name, description } = req.body;
-            const product = await Product.create({name, description});
+            const { name, purchasePrice, salePrice, description } = req.body;
+            const product = await Product.create({
+                name,
+                description,
+                purchase_price: purchasePrice,
+                sale_price: salePrice 
+            });
 
             return res.json(product);
         } catch (error) {
@@ -47,7 +52,12 @@ module.exports = {
             }
 
             const { name, description } = req.body;
-            const updatedProduct = await Product.update({ name, description }, {
+            const updatedProduct = await Product.update({
+                name,
+                description,
+                purchase_price: purchasePrice,
+                sale_price: salePrice 
+            }, {
                 where: { id },
                 returning: true
             });

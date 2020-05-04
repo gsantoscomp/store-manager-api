@@ -13,6 +13,14 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false
         },
+        purchase_price: {
+          type: Sequelize.DOUBLE,
+          allowNull: false,
+        },
+        sale_price:   {
+          type: Sequelize.DOUBLE,
+          allowNull: false,
+        },
         description: {
           type: Sequelize.TEXT
         },

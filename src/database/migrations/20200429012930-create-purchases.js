@@ -11,7 +11,8 @@ module.exports = {
         },
         request_number: {
           type: Sequelize.STRING,
-          allowNull: false
+          allowNull: false,
+          unique: true
         },
         datetime: {
           type: Sequelize.DATE,

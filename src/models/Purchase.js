@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
+const Product = require('../models/Product');
 
 class Purchase extends Model {
     static init(connection) {
@@ -10,18 +11,16 @@ class Purchase extends Model {
             },
                 email: DataTypes.STRING,
             status: DataTypes.ENUM([
-                'orderPlaced',
-                'paymentMade',
-                'paymentConfirmed',
-                'forwardedProduct', 
-                'productReceived',
-                'orderCanceled'
+                'orderPlaced', 'paymentMade','paymentConfirmed', 'forwardedProduct','productReceived','orderCanceled'
             ])
         }, {sequelize: connection});
     }
 
     static associate(models) {
         this.belongsTo(models.User, {foreignKey: 'user_id', as: 'user'});
+        this.belongsToMany(models.Product, {
+            foreignKey: 'purchase_id', through: 'products_purchases', as: 'products'
+        });
     }
 
 
