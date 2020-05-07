@@ -14,6 +14,7 @@ Purchase.init(connection);
 ProductPurchase.init(connection);
 
 User.associate(connection.models);
+Product.associate(connection.models);
 Purchase.associate(connection.models);
 
 module.exports = connection;

@@ -1,6 +1,7 @@
-const Purchase = require('../models/Purchase');
-const Product = require('../models/Product');
 const User = require('../models/User');
+const Product = require('../models/Product');
+const Purchase = require('../models/Purchase');
+const ProductPurchase = require('../models/ProductPurchase');
 
 module.exports = {
     async index(req, res) {
@@ -36,33 +37,19 @@ module.exports = {
                 return res.status(400).json('User not found!');
             }
 
-            // productsData = [{ productId, productPrice, productQuantity }];
+            // productsData = [{ product_id, product_value, product_quantity }];
             const { request_number, datetime, email, status, productsData } = req.body;
             const purchase = await Purchase.create({
                 request_number, datetime, email, status, user_id
             });
 
-            const productsIds = productsData.map(product => {
-                return product.productId;
+            let productsPurchase = productsData.map(product => {
+                product['purchase_id'] = purchase.id;
+
+                return product;
             });
 
-            const products = await Product.findAll({
-                where: {id: productsIds}
-            });
-
-            // A row will be inserted in the junction table "products_purchases" for each product purchased
-            products.forEach(async (product) => {
-                const selectedProduct = productsData.filter(productData => {
-                    return product.id == productData.productId;
-                });
-
-                await purchase.addProduct(product, {
-                    through: {
-                        product_value: selectedProduct[0].productPrice,
-                        product_quantity: selectedProduct[0].productQuantity
-                    }
-                });
-            });
+            await ProductPurchase.bulkCreate(productsPurchase);
 
             return res.json(purchase);
         } catch (error) {
@@ -94,7 +81,7 @@ module.exports = {
         
             return res.json(purchase);
         } catch (error) {
-            return res.status(500).json(error.message);
+            return res.status(500).json(error);
         }
     },
 
@@ -120,17 +107,29 @@ module.exports = {
                 return res.status(400).json('Purchase not found');
             }
 
-            const { request_number, datetime, email, status } = req.body;
+            const { request_number, datetime, email, status, productsData } = req.body;
+
+            if (productsData.length) {
+                let productsPurchase = productsData.map(product => {
+                    product['purchase_id'] = purchase.id;
+
+                    return product;
+                });
+
+                await purchase.setProducts([]);
+                await ProductPurchase.bulkCreate(productsPurchase);
+            }
+
             const updatedPurchase = await Purchase.update({
                 request_number, datetime, email, status, user_id
             }, {
                 where: { id },
                 returning: true
-            });
+            });            
 
             return res.json(updatedPurchase);
         } catch (error) {
-            return res.status(500).json(error.message);
+            return res.status(500).json(error);
         }
     },
 
@@ -154,7 +153,7 @@ module.exports = {
 
             return res.json();
         } catch (error) {
-            return res.status(500).json(error.message);
+            return res.status(500).json(error);
         }
     },
 }
