@@ -1,12 +1,17 @@
-const Sequelize = require('sequelize');
 const dbConfig = require('../config/database');
+const Sequelize = require('sequelize');
+const env = process.env.NODE_ENV || "development";
 
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Purchase = require('../models/Purchase');
 const ProductPurchase = require('../models/ProductPurchase')
 
-const connection = new Sequelize(dbConfig);
+console.log(env);
+
+const connection = new Sequelize(dbConfig[env].url, {
+    define: { timestamps: true, underscored: true }
+});
 
 User.init(connection);
 Product.init(connection);

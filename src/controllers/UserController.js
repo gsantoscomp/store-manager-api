@@ -13,7 +13,7 @@ module.exports = {
 
             return res.json(users);
         } catch(error) {
-            return res.status(500).json(error.message);
+            return res.status(500).json(error);
         }
     },
 
